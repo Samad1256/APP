@@ -1,10 +1,10 @@
-# DilSe Matchify - Dating App with Advanced Matchmaking
+# DilSe Matchify - Full Stack Dating App with Smart Matching for Partners
 
-A complete full-stack dating application built with Node.js, Express, MongoDB, and modern frontend technologies. Features intelligent matchmaking algorithm, real-time messaging, and user profile management.
+A complete full-stack dating application built with Node.js, Express, MongoDB, and modern frontend technologies. Features intelligent matchmaking algorithm, real-time messaging, and smart partner matching based on compatibility.
 
 ## 🎯 Project Overview
 
-DilSe Matchify is an Indian-focused dating platform that connects users based on compatibility, interests, and location-based preferences.
+DilSe Matchify is a full-stack dating platform that intelligently connects users based on compatibility, interests, and location-based preferences. Using an advanced matching algorithm, the app finds the perfect partner match for each user.
 
 ### Tech Stack
 - **Backend**: Node.js, Express.js, MongoDB
