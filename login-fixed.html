@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.95); color: #333; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .success { background: #d4edda; color: #155724; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #28a745; }
+        .credentials { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #007bff; }
+        .test-btn { background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; margin: 10px 5px; transition: all 0.3s; }
+        .test-btn:hover { background: #218838; transform: translateY(-2px); }
+        .login-btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; margin: 10px 5px; transition: all 0.3s; }
+        .login-btn:hover { background: #0056b3; transform: translateY(-2px); }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .emoji { font-size: 24px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Login Issue FIXED!</h1>
+        
+        <div class="success">
+            <h3><span class="emoji">✅</span>Problem Solved!</h3>
+            <p>All user passwords have been reset and synchronized. The login should now work perfectly!</p>
+        </div>
+
+        <div class="credentials">
+            <h3><span class="emoji">🔑</span>Working Credentials:</h3>
+            <p><strong>Any of these emails work:</strong></p>
+            <ul>
+                <li>📧 <code>samad_shaik@srmap.edu.in</code></li>
+                <li>📧 <code>samadking1256@gmail.com</code></li>
+                <li>📧 <code>ritwikparamesh4959@gmail.com</code></li>
+            </ul>
+            <p><strong>Password for ALL accounts:</strong> <code>password123</code></p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="test-btn" onclick="testLogin('samad_shaik@srmap.edu.in')">
+                🧪 Test Samad Account
+            </button>
+            <button class="test-btn" onclick="testLogin('ritwikparamesh4959@gmail.com')">
+                🧪 Test Ritwik Account
+            </button>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="login-btn" onclick="window.location.href='/loginpage.html'">
+                🚀 Go to Login Page
+            </button>
+            <button class="login-btn" onclick="window.location.href='/homepage.html'">
+                🏠 Go to Homepage
+            </button>
+        </div>
+
+        <div id="testResult"></div>
+    </div>
+
+    <script>
+        async function testLogin(email) {
+            const password = 'password123';
+            const resultDiv = document.getElementById('testResult');
+            
+            resultDiv.innerHTML = `<div style="background: #e7f3ff; padding: 15px; border-radius: 10px; margin: 10px 0;">🔄 Testing login for ${email}...</div>`;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('authToken', data.data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.data.user));
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>🎉 LOGIN SUCCESSFUL!</h3>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>User:</strong> ${data.data.user.name}</p>
+                            <p><strong>Status:</strong> Logged in and token stored!</p>
+                            <button class="login-btn" onclick="window.location.href='/homepage.html'">
+                                🏠 Go to Homepage Now
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 10px 0;">❌ Login failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 10px 0;">💥 Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Fix Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f8ff; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .info { background: #e7f3ff; color: #0c5460; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Profile Fix Test</h1>
+        
+        <div class="info">
+            <h3>Step 1: Login and Test Profile API</h3>
+            <button onclick="loginAndTest()">🚀 Login & Test Profile API</button>
+        </div>
+        
+        <div class="info">
+            <h3>Step 2: Go to Fixed Profile Page</h3>
+            <button onclick="window.location.href='/myprofile.html'">👤 Open Profile Page</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function loginAndTest() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info">🔄 Testing login and profile API...</div>';
+            
+            try {
+                // Step 1: Login
+                console.log('🔐 Step 1: Logging in...');
+                const loginResponse = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'samad_shaik@srmap.edu.in', 
+                        password: 'password123' 
+                    })
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (!loginResponse.ok || !loginData.success) {
+                    throw new Error('Login failed: ' + loginData.message);
+                }
+                
+                // Store token
+                localStorage.setItem('authToken', loginData.data.token);
+                localStorage.setItem('userData', JSON.stringify(loginData.data.user));
+                
+                console.log('✅ Login successful');
+                
+                // Step 2: Test profile API
+                console.log('👤 Step 2: Testing profile API...');
+                const profileResponse = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${loginData.data.token}` }
+                });
+                
+                const profileData = await profileResponse.json();
+                
+                if (!profileResponse.ok || !profileData.success) {
+                    throw new Error('Profile API failed: ' + profileData.message);
+                }
+                
+                console.log('✅ Profile API successful');
+                console.log('User data:', profileData.data.user);
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ SUCCESS!</h3>
+                        <p><strong>Login:</strong> ✅ Working</p>
+                        <p><strong>Profile API:</strong> ✅ Working</p>
+                        <p><strong>User Name:</strong> ${profileData.data.user.name}</p>
+                        <p><strong>Email:</strong> ${profileData.data.user.email}</p>
+                        <p><strong>Gender:</strong> ${profileData.data.user.gender}</p>
+                        <p><strong>Date of Birth:</strong> ${profileData.data.user.dateOfBirth || 'Not set'}</p>
+                        <p><strong>Bio:</strong> ${profileData.data.user.bio || 'Not set'}</p>
+                        <p><strong>Location:</strong> ${profileData.data.user.location ? JSON.stringify(profileData.data.user.location) : 'Not set'}</p>
+                        <p><strong>Token stored in localStorage</strong></p>
+                        <button onclick="window.location.href='/myprofile.html'">🎯 Go to Profile Page Now</button>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ ERROR</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

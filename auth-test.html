@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        input, button { margin: 5px; padding: 8px; }
+        button { background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DilseMatchify Authentication Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Login with FAKE credentials (should FAIL)</h3>
+        <div>
+            <input type="email" id="fakeEmail" value="fake@nonexistent.com" placeholder="Fake email">
+            <input type="password" id="fakePassword" value="wrongpassword" placeholder="Wrong password">
+            <button onclick="testFakeLogin()">Test Fake Login</button>
+        </div>
+        <div id="fakeResult" class="result">Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Register a real user first</h3>
+        <div>
+            <input type="text" id="realName" value="Test User" placeholder="Name">
+            <input type="email" id="realEmail" value="test@real.com" placeholder="Email">
+            <input type="password" id="realPassword" value="testpass123" placeholder="Password">
+            <button onclick="registerUser()">Register User</button>
+        </div>
+        <div id="registerResult" class="result">Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Login with REAL credentials (should WORK)</h3>
+        <div>
+            <input type="email" id="realLoginEmail" value="test@real.com" placeholder="Real email">
+            <input type="password" id="realLoginPassword" value="testpass123" placeholder="Real password">
+            <button onclick="testRealLogin()">Test Real Login</button>
+        </div>
+        <div id="realResult" class="result">Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: Check User Database</h3>
+        <button onclick="checkUsers()">Get All Users</button>
+        <div id="usersResult" class="result">Not tested yet</div>
+    </div>
+
+    <script>
+        async function testFakeLogin() {
+            const email = document.getElementById('fakeEmail').value;
+            const password = document.getElementById('fakePassword').value;
+            const resultDiv = document.getElementById('fakeResult');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ BUG CONFIRMED! Fake login succeeded when it should fail.<br>Response: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ GOOD! Fake login failed as expected.<br>Error: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network error: ${error.message}`;
+            }
+        }
+
+        async function registerUser() {
+            const name = document.getElementById('realName').value;
+            const email = document.getElementById('realEmail').value;
+            const password = document.getElementById('realPassword').value;
+            const resultDiv = document.getElementById('registerResult');
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ User registered successfully!<br>User ID: ${data.data.user.id}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Registration failed: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network error: ${error.message}`;
+            }
+        }
+
+        async function testRealLogin() {
+            const email = document.getElementById('realLoginEmail').value;
+            const password = document.getElementById('realLoginPassword').value;
+            const resultDiv = document.getElementById('realResult');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Real login succeeded!<br>User: ${data.data.user.name}<br>Token received: Yes`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Real login failed: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network error: ${error.message}`;
+            }
+        }
+
+        async function checkUsers() {
+            const resultDiv = document.getElementById('usersResult');
+            
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    let userList = `✅ Found ${data.count} users in database:<br><br>`;
+                    data.data.forEach((user, index) => {
+                        userList += `${index + 1}. ${user.name} (${user.email})<br>`;
+                    });
+                    resultDiv.innerHTML = userList;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Failed to get users: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

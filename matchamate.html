@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match-a-Mate - DilSe Matchify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #E91E63;
+            --secondary: #C44569;
+            --accent: #F8B500;
+            --dark: #2D3436;
+            --text: #757575;
+            --light-text: #B0B0B0;
+            --background: #F8F9FA;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--background), #ffffff);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 20px rgba(233, 30, 99, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-family: 'Kalam', cursive;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .profile-image {
+            height: 250px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            padding: 1.5rem;
+        }
+
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-details {
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .profile-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .interest-tag {
+            background: rgba(233, 30, 99, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 1rem;
+            border-top: 1px solid var(--background);
+        }
+
+        .action-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pass-btn {
+            background: #ff4757;
+            color: white;
+        }
+
+        .like-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .pass-btn:hover, .like-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text);
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 300px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="homepage.html" class="brand">
+                    <i class="fas fa-heart"></i> DilSe Matchify
+                </a>
+                <div class="nav-actions">
+                    <a href="homepage.html" class="nav-btn">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="profiles-grid" id="profilesGrid">
+                <!-- Profiles will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <div class="debug-info" id="debugInfo"></div>
+
+    <script>
+        // For debugging
+        const debug = {
+            log: function(msg) {
+                console.log(msg);
+                const debugInfo = document.getElementById('debugInfo');
+                debugInfo.style.display = 'block';
+                debugInfo.innerHTML += msg + '<br>';
+            }
+        };
+
+        async function loadSuggestions() {
+            try {
+                debug.log('Starting to load suggestions...');
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    debug.log('No token found, redirecting to login');
+                    window.location.href = 'loginpage.html';
+                    return;
+                }
+
+                debug.log('Fetching suggestions from server...');
+                const response = await fetch('/api/matches/suggestions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                debug.log(`Response status: ${response.status}`);
+                const data = await response.json();
+                debug.log(`Got ${data.data ? data.data.length : 0} suggestions`);
+
+                if (data.success && data.data) {
+                    renderProfiles(data.data);
+                } else {
+                    debug.log('No suggestions found or error occurred');
+                    showEmptyState();
+                }
+            } catch (error) {
+                debug.log(`Error: ${error.message}`);
+                showEmptyState('Error loading suggestions. Please try again later.');
+            }
+        }
+
+        function renderProfiles(profiles) {
+            const grid = document.getElementById('profilesGrid');
+            grid.innerHTML = '';
+
+            if (!profiles || profiles.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            profiles.forEach(profile => {
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+
+                const photoUrl = profile.photos && profile.photos.length > 0 ? 
+                    profile.photos[0].url : 
+                    'https://via.placeholder.com/300x400?text=No+Photo';
+
+                // Calculate age if we have dateOfBirth
+                let age = '';
+                if (profile.dateOfBirth) {
+                    const birthDate = new Date(profile.dateOfBirth);
+                    const today = new Date();
+                    age = today.getFullYear() - birthDate.getFullYear();
+                }
+
+                const location = profile.location ? 
+                    `${profile.location.city}, ${profile.location.state}` : 
+                    'Location not specified';
+
+                card.innerHTML = `
+                    <div class="profile-image">
+                        <img src="${photoUrl}" alt="${profile.name}'s photo">
+                    </div>
+                    <div class="profile-info">
+                        <h3 class="profile-name">${profile.name}</h3>
+                        <div class="profile-details">
+                            ${age ? age + ' years •' : ''} ${location}
+                        </div>
+                        <div class="profile-interests">
+                            ${(profile.interests || []).map(interest => 
+                                `<span class="interest-tag">${interest}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="profile-actions">
+                            <button class="action-btn pass-btn" onclick="handleSwipe('${profile._id}', 'pass')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn like-btn" onclick="handleSwipe('${profile._id}', 'like')">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        async function handleSwipe(profileId, action) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const endpoint = action === 'like' ? '/api/matches/like' : '/api/matches/pass';
+                debug.log(`Sending ${action} for profile ${profileId}`);
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ toUserId: profileId })
+                });
+
+                const data = await response.json();
+                debug.log(`${action} response: ${JSON.stringify(data)}`);
+
+                if (data.success) {
+                    const card = document.querySelector(`[onclick*="${profileId}"]`).closest('.profile-card');
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.remove();
+                        if (document.querySelectorAll('.profile-card').length === 0) {
+                            showEmptyState();
+                        }
+                    }, 300);
+
+                    if (data.data && data.data.isMatch) {
+                        alert('Congratulations! You have a new match! 🎉');
+                    }
+                }
+            } catch (error) {
+                debug.log(`Error in handleSwipe: ${error.message}`);
+                alert('Error processing your action. Please try again.');
+            }
+        }
+
+        function showEmptyState(message = 'No more suggestions available right now. Check back later!') {
+            const grid = document.getElementById('profilesGrid');
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                    <h3>${message}</h3>
+                </div>
+            `;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', loadSuggestions);
+    </script>
+</body>
+</html>

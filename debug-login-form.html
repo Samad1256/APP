@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f8ff; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .form-group { margin: 20px 0; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .btn { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .btn:hover { background: #0056b3; }
+        .debug-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #007bff; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Login Debug Tool</h1>
+        
+        <form id="debugLoginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="samad_shaik@srmap.edu.in" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" value="password123" required>
+            </div>
+            
+            <button type="submit" class="btn">🚀 Debug Login</button>
+        </form>
+        
+        <div id="debugOutput"></div>
+        
+        <div class="debug-info">
+            <h3>🎯 Expected Values:</h3>
+            <ul>
+                <li><strong>Email:</strong> samad_shaik@srmap.edu.in</li>
+                <li><strong>Password:</strong> password123</li>
+                <li><strong>Password Length:</strong> 11 characters (should pass >= 6 validation)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('debugLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const debugOutput = document.getElementById('debugOutput');
+            
+            // Clear previous output
+            debugOutput.innerHTML = '';
+            
+            // Step 1: Debug form values
+            debugOutput.innerHTML += `
+                <div class="debug-info">
+                    <h3>📋 Step 1: Form Values Retrieved</h3>
+                    <pre>Email: "${email}" (length: ${email.length})
+Password: "${password}" (length: ${password.length})
+Email includes @: ${email.includes('@')}
+Password length >= 6: ${password.length >= 6}</pre>
+                </div>
+            `;
+            
+            // Step 2: Frontend validation (exact same logic as original)
+            let validationPassed = true;
+            let validationErrors = [];
+            
+            if (!email || !password) {
+                validationErrors.push('Please fill in both email and password fields.');
+                validationPassed = false;
+            }
+            
+            if (!email.includes('@')) {
+                validationErrors.push('Please enter a valid email address.');
+                validationPassed = false;
+            }
+            
+            if (password.length < 6) {
+                validationErrors.push('Password must be at least 6 characters long.');
+                validationPassed = false;
+            }
+            
+            debugOutput.innerHTML += `
+                <div class="debug-info">
+                    <h3>🔍 Step 2: Frontend Validation</h3>
+                    <pre>Validation Passed: ${validationPassed}
+Validation Errors: ${validationErrors.length > 0 ? validationErrors.join(', ') : 'None'}</pre>
+                </div>
+            `;
+            
+            if (!validationPassed) {
+                debugOutput.innerHTML += `
+                    <div class="error">
+                        <h3>❌ Frontend Validation Failed</h3>
+                        <p>Errors: ${validationErrors.join(', ')}</p>
+                        <p><strong>This is why the form doesn't submit to the server!</strong></p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Step 3: Make API call
+            debugOutput.innerHTML += `
+                <div class="debug-info">
+                    <h3>🌐 Step 3: Making API Call</h3>
+                    <pre>URL: /api/auth/login
+Method: POST
+Headers: Content-Type: application/json
+Body: ${JSON.stringify({ email, password }, null, 2)}</pre>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                debugOutput.innerHTML += `
+                    <div class="debug-info">
+                        <h3>📥 Step 4: Server Response</h3>
+                        <pre>Status: ${response.status}
+Success: ${data.success}
+Response: ${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('authToken', data.data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.data.user));
+                    
+                    debugOutput.innerHTML += `
+                        <div class="success">
+                            <h3>✅ LOGIN SUCCESSFUL!</h3>
+                            <p>Welcome back, ${data.data.user.name}!</p>
+                            <p>Token stored in localStorage</p>
+                            <button onclick="window.location.href='/homepage.html'" class="btn">Go to Homepage</button>
+                        </div>
+                    `;
+                } else {
+                    debugOutput.innerHTML += `
+                        <div class="error">
+                            <h3>❌ LOGIN FAILED</h3>
+                            <p>Error: ${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                debugOutput.innerHTML += `
+                    <div class="error">
+                        <h3>💥 NETWORK ERROR</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+        
+        // Auto-fill and test on page load
+        window.onload = () => {
+            console.log('Debug tool loaded. Form elements:');
+            console.log('Email field:', document.getElementById('email'));
+            console.log('Password field:', document.getElementById('password'));
+        };
+    </script>
+</body>
+</html>

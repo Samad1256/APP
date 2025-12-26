@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - DilSe Matchify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #E91E63;
+            --secondary: #C44569;
+            --accent: #F8B500;
+            --dark: #2D3436;
+            --text: #757575;
+            --light-text: #B0B0B0;
+            --background: #F8F9FA;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--background) 0%, #E8F5E8 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 5px 20px rgba(233, 30, 99, 0.1);
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Kalam', cursive;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(233, 30, 99, 0.1);
+        }
+
+        .profile-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .profile-sidebar {
+            background: white;
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.1);
+            text-align: center;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.2);
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .edit-photo-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-photo-btn:hover {
+            transform: scale(1.1);
+            background: var(--secondary);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-status {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(233, 30, 99, 0.05);
+            border-radius: 15px;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .secondary-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .profile-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(233, 30, 99, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+
+        .edit-btn:hover {
+            color: var(--primary);
+            background: rgba(233, 30, 99, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.1);
+            transform: scale(1.02);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .interests-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .interest-tag {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .interest-tag .remove {
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .interest-tag .remove:hover {
+            opacity: 1;
+        }
+
+        .add-interest {
+            background: rgba(233, 30, 99, 0.1);
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            cursor: pointer;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            color: var(--light-text);
+            font-size: 2rem;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .photo-item:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .photo-action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .photo-action-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .save-section {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 2rem;
+            border-top: 1px solid #E0E0E0;
+            margin-top: 2rem;
+        }
+
+        .success-message {
+            background: #E8F5E8;
+            color: #2E7D32;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #4CAF50;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .profile-sidebar {
+                position: static;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">DilSe Matchify</div>
+            <nav class="nav-links">
+                <a href="homepage.html" class="nav-link">Home</a>
+                <a href="matchamate.html" class="nav-link">Match a Mate</a>
+                <a href="settings.html" class="nav-link ">Settings</a>
+                <a href="blhp.html" class="nav-link ">Log Out</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="profile-container">
+            <!-- Profile Sidebar -->
+            <div class="profile-sidebar fade-in-up">
+                <div class="profile-picture">
+                    <img id="profileImage" src="https://via.placeholder.com/150x150/e91e63/white?text=👤" alt="Profile Picture">
+                    <button class="edit-photo-btn" onclick="uploadPhoto()">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                
+                <h2 class="profile-name" id="profileName">Loading...</h2>
+                <p class="profile-status">Looking for meaningful connections ✨</p>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Matches</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Likes</span>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="primary-button">
+                        <i class="fas fa-eye"></i> Preview Profile
+                    </button>
+                    <button class="secondary-button">
+                        <i class="fas fa-share-alt"></i> Share Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Profile Content -->
+            <div class="profile-main">
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> Profile updated successfully!
+                </div>
+
+                <!-- Basic Information -->
+                <div class="card fade-in-up">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user card-icon"></i>
+                            Basic Information
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit('basic')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" placeholder="Enter your full name" id="fullName">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-input" value="20" id="age">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-input" value="Andhra-pradesh, India" id="location">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Occupation</label>
+                        <input type="text" class="form-input" value="Student" id="occupation">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Education</label>
+                        <select class="form-select" id="education">
+                            <option value="bachelor" selected>Bachelor's Degree</option>
+                            <option value="master" >Master's Degree</option>
+                            <option value="phd">PhD</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- About Me -->
+                <div class="card fade-in-up">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-heart card-icon"></i>
+                            About Me
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit('about')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea class="form-textarea" id="aboutMe" placeholder="Tell us about yourself...">I'm a passionate software engineer who loves exploring new technologies and solving complex problems. In my free time, you'll find me hiking mountain trails, trying new cuisines, or curled up with a good book. I believe in living life to the fullest and am looking for someone who shares my zest for adventure and meaningful conversations.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Looking For</label>
+                        <textarea class="form-textarea" id="lookingFor" placeholder="What are you looking for?">I'm seeking a genuine connection with someone who values honesty, has a good sense of humor, and isn't afraid to be themselves. Ideally, you love trying new experiences and can appreciate both quiet nights in and exciting adventures out.</textarea>
+                    </div>
+                </div>
+
+                <!-- Interests & Hobbies -->
+                <div class="card fade-in-up">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-star card-icon"></i>
+                            Interests & Hobbies
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit('interests')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+
+                    <div class="interests-grid" id="interestsGrid">
+                        <div class="interest-tag">
+                            <span>Photography</span>
+                            <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                        </div>
+                        <div class="interest-tag">
+                            <span>Hiking</span>
+                            <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                        </div>
+                        <div class="interest-tag">
+                            <span>Cooking</span>
+                            <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                        </div>
+                        <div class="interest-tag">
+                            <span>Reading</span>
+                            <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                        </div>
+                        <div class="interest-tag">
+                            <span>Travel</span>
+                            <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                        </div>
+                        <div class="interest-tag add-interest" onclick="addInterest()">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Interest</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos -->
+                <div class="card fade-in-up">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-images card-icon"></i>
+                            Photos
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit('photos')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+
+                    <div class="photos-grid" id="photosGrid">
+                        <div class="photo-item">
+                            <img src="https://via.placeholder.com/150x150/e91e63/white?text=📷" alt="Photo 1" id="photo1">
+                        </div>
+                        <div class="photo-item">
+                            <img src="https://via.placeholder.com/150x150/e91e63/white?text=📷" alt="Photo 2" id="photo2">
+                        </div>
+                        <div class="photo-item">
+                            <img src="https://via.placeholder.com/150x150/e91e63/white?text=📷" alt="Photo 3" id="photo3">
+                        </div>
+                        <div class="photo-item" onclick="uploadAdditionalPhoto(this)">
+                            <i class="fas fa-plus photo-placeholder"></i>
+                        </div>
+                        <div class="photo-item" onclick="uploadAdditionalPhoto(this)">
+                            <i class="fas fa-plus photo-placeholder"></i>
+                        </div>
+                        <div class="photo-item" onclick="uploadAdditionalPhoto(this)">
+                            <i class="fas fa-plus photo-placeholder"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="card fade-in-up">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-cog card-icon"></i>
+                            Preferences
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit('preferences')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Age Range</label>
+                            <select class="form-select" id="ageRange">
+                                <option value="18-25" selected>18-25</option>
+                                <option value="25-35" >25-35</option>
+                                <option value="35-45">35-45</option>
+                                <option value="45+">45+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Distance</label>
+                            <select class="form-select" id="distance">
+                                <option value="5" selected>Within 50 Km</option>
+                                <option value="10">Within 100 Km</option>
+                                <option value="25">Within 250 Km</option>
+                                <option value="50">Within 500 Km</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Section -->
+                <div class="save-section">
+                    <button class="secondary-button">Cancel Changes</button>
+                    <button class="primary-button" onclick="saveProfile()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleEdit(section) {
+            // This would normally enable/disable editing for specific sections
+            console.log(`Toggling edit mode for: ${section}`);
+        }
+
+        function uploadPhoto() {
+            // Create file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.onchange = async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size too large. Please choose an image smaller than 5MB.');
+                    return;
+                }
+                
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Invalid file type. Please choose a JPEG, PNG, or GIF image.');
+                    return;
+                }
+                
+                // Show loading indicator
+                const uploadBtn = document.querySelector('.edit-photo-btn');
+                const originalContent = uploadBtn.innerHTML;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                uploadBtn.disabled = true;
+                
+                try {
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('photo', file);
+                    
+                    // Get auth token
+                    const token = localStorage.getItem('authToken');
+                    if (!token) {
+                        alert('Please login first');
+                        return;
+                    }
+                    
+                    // Upload photo
+                    const response = await fetch('/api/uploads/photo', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Update profile picture immediately
+                        const profileImg = document.getElementById('profileImage');
+                        if (profileImg) {
+                            profileImg.src = result.data.url;
+                        }
+                        
+                        // Update first photo in gallery
+                        const photo1 = document.getElementById('photo1');
+                        if (photo1) {
+                            photo1.src = result.data.url;
+                        }
+                        
+                        alert('Photo uploaded successfully!');
+                        
+                        // Optionally reload profile data to get updated photos array
+                        loadProfile();
+                    } else {
+                        alert(`Upload failed: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload failed. Please try again.');
+                } finally {
+                    // Restore button
+                    uploadBtn.innerHTML = originalContent;
+                    uploadBtn.disabled = false;
+                }
+            };
+            
+            // Trigger file selection
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        }
+
+        function uploadAdditionalPhoto(clickedElement) {
+            // Create file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.onchange = async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size too large. Please choose an image smaller than 5MB.');
+                    return;
+                }
+                
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Invalid file type. Please choose a JPEG, PNG, or GIF image.');
+                    return;
+                }
+                
+                // Show loading state
+                const originalContent = clickedElement.innerHTML;
+                clickedElement.innerHTML = '<i class="fas fa-spinner fa-spin photo-placeholder"></i>';
+                
+                try {
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('photo', file);
+                    
+                    // Get auth token
+                    const token = localStorage.getItem('authToken');
+                    if (!token) {
+                        alert('Please login first');
+                        return;
+                    }
+                    
+                    // Upload photo
+                    const response = await fetch('/api/uploads/photo', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find next available photo slot
+                        const photos = ['photo1', 'photo2', 'photo3'];
+                        let targetPhotoEl = null;
+                        
+                        for (const photoId of photos) {
+                            const photoEl = document.getElementById(photoId);
+                            if (photoEl && (photoEl.src.includes('placeholder') || photoEl.src.includes('text='))) {
+                                targetPhotoEl = photoEl;
+                                break;
+                            }
+                        }
+                        
+                        if (targetPhotoEl) {
+                            targetPhotoEl.src = result.data.url;
+                            // Replace the plus icon with the new image in the clicked element
+                            clickedElement.innerHTML = `<img src="${result.data.url}" alt="User Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">`;
+                        }
+                        
+                        alert('Photo added successfully!');
+                        
+                        // Reload profile to update photos array
+                        setTimeout(() => loadProfile(), 1000);
+                    } else {
+                        alert(`Upload failed: ${result.message}`);
+                        clickedElement.innerHTML = originalContent;
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload failed. Please try again.');
+                    clickedElement.innerHTML = originalContent;
+                }
+            };
+            
+            // Trigger file selection
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        }
+
+        function changePhoto(photoIndex) {
+            // Create file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.onchange = async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Validate file
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size too large. Please choose an image smaller than 5MB.');
+                    return;
+                }
+                
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Invalid file type. Please choose a JPEG, PNG, or GIF image.');
+                    return;
+                }
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('photo', file);
+                    
+                    const token = localStorage.getItem('authToken');
+                    if (!token) {
+                        alert('Please login first');
+                        return;
+                    }
+                    
+                    const response = await fetch('/api/uploads/photo', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Update the specific photo
+                        const photoEl = document.getElementById(`photo${photoIndex}`);
+                        if (photoEl) {
+                            photoEl.src = result.data.url;
+                        }
+                        
+                        // Update profile image if it's the first photo
+                        if (photoIndex === 1) {
+                            const profileImg = document.getElementById('profileImage');
+                            if (profileImg) {
+                                profileImg.src = result.data.url;
+                            }
+                        }
+                        
+                        alert('Photo updated successfully!');
+                        setTimeout(() => loadProfile(), 1000);
+                    } else {
+                        alert(`Upload failed: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload failed. Please try again.');
+                }
+            };
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        }
+
+        async function deletePhoto(photoIndex, publicId) {
+            if (!confirm('Are you sure you want to delete this photo?')) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Please login first');
+                    return;
+                }
+                
+                // For now, we'll just reset the photo to placeholder
+                // You can implement a delete endpoint later
+                const photoEl = document.getElementById(`photo${photoIndex}`);
+                if (photoEl) {
+                    photoEl.src = 'https://via.placeholder.com/150x150/e91e63/white?text=📷';
+                    
+                    // Remove overlay
+                    const photoContainer = photoEl.parentElement;
+                    const overlay = photoContainer.querySelector('.photo-overlay');
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                    
+                    // Add back the add photo functionality
+                    photoContainer.onclick = () => uploadAdditionalPhoto(photoContainer);
+                }
+                
+                alert('Photo deleted successfully!');
+                
+                // If it was the first photo, update profile image
+                if (photoIndex === 1) {
+                    const profileImg = document.getElementById('profileImage');
+                    if (profileImg) {
+                        const initials = 'SS'; // You can get this from user data
+                        profileImg.src = `https://via.placeholder.com/150x150/e91e63/white?text=${initials}`;
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Delete failed. Please try again.');
+            }
+        }
+
+        function removeInterest(element) {
+            element.parentElement.remove();
+        }
+
+        function addInterest() {
+            const interestName = prompt('Enter a new interest:');
+            if (interestName && interestName.trim()) {
+                const interestsGrid = document.getElementById('interestsGrid');
+                const addButton = interestsGrid.querySelector('.add-interest');
+                
+                const newInterest = document.createElement('div');
+                newInterest.className = 'interest-tag';
+                newInterest.innerHTML = `
+                    <span>${interestName.trim()}</span>
+                    <i class="fas fa-times remove" onclick="removeInterest(this)"></i>
+                `;
+                
+                interestsGrid.insertBefore(newInterest, addButton);
+            }
+        }
+
+        function saveProfile() {
+            // Simulate saving profile
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // Scroll to top to show success message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load user profile data
+        async function loadUserProfile() {
+            console.log('🔄 Starting to load profile...');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                console.log('❌ No token found');
+                alert('Please login first');
+                window.location.href = '/loginpage.html';
+                return;
+            }
+            
+            console.log('🔑 Token found, making API call...');
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                console.log('📡 API Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const user = data.data.user;
+                    
+                    console.log('👤 User data loaded:', user);
+                    
+                    // Update profile information safely
+                    const profileNameEl = document.getElementById('profileName');
+                    if (profileNameEl) {
+                        profileNameEl.textContent = user.name || 'Your Name';
+                    }
+                    
+                    const profileStatusEl = document.querySelector('.profile-status');
+                    if (profileStatusEl) {
+                        profileStatusEl.textContent = user.isActive ? 'Online' : 'Looking for meaningful connections ✨';
+                    }
+                    
+                    // Update form fields with proper IDs
+                    const fullNameEl = document.getElementById('fullName');
+                    if (fullNameEl) {
+                        fullNameEl.value = user.name || '';
+                    }
+                    
+                    const emailEl = document.getElementById('email');
+                    if (emailEl) {
+                        emailEl.value = user.email || '';
+                    }
+                    
+                    const ageEl = document.getElementById('age');
+                    if (ageEl && user.dateOfBirth) {
+                        const age = new Date().getFullYear() - new Date(user.dateOfBirth).getFullYear();
+                        ageEl.value = age;
+                    }
+                    
+                    const locationEl = document.getElementById('location');
+                    if (locationEl && user.location && user.location.city) {
+                        locationEl.value = user.location.city;
+                    }
+                    
+                    const occupationEl = document.getElementById('occupation');
+                    if (occupationEl) {
+                        // Since occupation field is not in User schema, show interests
+                        const interests = user.interests && user.interests.length > 0 
+                            ? user.interests.join(', ') 
+                            : 'Technology, Programming';
+                        occupationEl.value = interests;
+                    }
+                    
+                    const bioEl = document.getElementById('bio');
+                    if (bioEl) {
+                        bioEl.value = user.bio || '';
+                    }
+                    
+                    const aboutMeEl = document.getElementById('aboutMe');
+                    if (aboutMeEl) {
+                        aboutMeEl.value = user.bio || '';
+                    }
+                    
+                    // Update profile picture
+                    const profileImageEl = document.getElementById('profileImage');
+                    if (profileImageEl) {
+                        if (user.photos && user.photos.length > 0 && user.photos[0].url) {
+                            profileImageEl.src = user.photos[0].url;
+                        } else {
+                            // Use a personalized placeholder with user's initials
+                            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '👤';
+                            profileImageEl.src = `https://via.placeholder.com/150x150/e91e63/white?text=${initials}`;
+                        }
+                    }
+                    
+                    // Update photo gallery
+                    if (user.photos && user.photos.length > 0) {
+                        user.photos.forEach((photo, index) => {
+                            if (index < 3) { // Only show first 3 photos
+                                const photoEl = document.getElementById(`photo${index + 1}`);
+                                if (photoEl && photo.url) {
+                                    // Create photo container with overlay
+                                    photoEl.src = photo.url;
+                                    
+                                    // Add overlay for photo management
+                                    const photoContainer = photoEl.parentElement;
+                                    photoContainer.onclick = null; // Remove add photo click
+                                    
+                                    // Check if overlay already exists
+                                    if (!photoContainer.querySelector('.photo-overlay')) {
+                                        const overlay = document.createElement('div');
+                                        overlay.className = 'photo-overlay';
+                                        overlay.innerHTML = `
+                                            <div class="photo-actions">
+                                                <button class="photo-action-btn" onclick="changePhoto(${index + 1})" title="Change Photo">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="photo-action-btn" onclick="deletePhoto(${index + 1}, '${photo.public_id || ''}')" title="Delete Photo">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        `;
+                                        photoContainer.appendChild(overlay);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
+                    console.log('✅ Profile data loaded successfully!');
+                    console.log('📋 Populated data:', {
+                        name: user.name,
+                        email: user.email,
+                        age: user.dateOfBirth ? new Date().getFullYear() - new Date(user.dateOfBirth).getFullYear() : 'Unknown',
+                        location: user.location?.city || 'Not set',
+                        interests: user.interests?.join(', ') || 'Not set',
+                        bio: user.bio ? user.bio.substring(0, 50) + '...' : 'Not set',
+                        photos: user.photos?.length || 0
+                    });
+                    
+                } else {
+                    if (response.status === 401) {
+                        // Token is invalid or expired
+                        console.log('🔒 Token expired, redirecting to login');
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('userData');
+                        alert('Your session has expired. Please login again.');
+                        window.location.href = '/loginpage.html';
+                        return;
+                    }
+                    console.log('❌ API error, status:', response.status);
+                    throw new Error(`API Error: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('💥 Error loading profile:', error);
+                if (error.message.includes('Failed to fetch')) {
+                    alert('Network error. Please check your connection and try again.');
+                } else {
+                    alert('Failed to load profile data: ' + error.message);
+                }
+            }
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user profile data
+            loadUserProfile();
+            
+            // Stagger animation for cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.offsetHeight; // Force reflow
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

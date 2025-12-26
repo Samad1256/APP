@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Accounts Test - Fixed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .user-card {
+            border: 2px solid #e91e63;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        }
+        .button {
+            background: #e91e63;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #c2185b;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .fixed-banner {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="fixed-banner">
+            🎉 LOGIN ISSUE FIXED! All accounts now work with password123
+        </div>
+        
+        <h1>🔐 Test All Fixed Accounts</h1>
+        
+        <div class="user-card">
+            <h3>👩 Riya Sharma (Female)</h3>
+            <p><strong>Email:</strong> riya.sharma@gmail.com</p>
+            <p><strong>Password:</strong> password123</p>
+            <p><strong>Age:</strong> 21 | <strong>Location:</strong> Mumbai</p>
+            <button class="button" onclick="testLogin('riya.sharma@gmail.com', 'Riya')">Test Riya Login</button>
+            <button class="button" onclick="loginAndOpenProfile('riya.sharma@gmail.com')">Login & View Profile</button>
+        </div>
+        
+        <div class="user-card">
+            <h3>👩 Faziya (Female)</h3>
+            <p><strong>Email:</strong> faziya33@gmail.com</p>
+            <p><strong>Password:</strong> password123</p>
+            <button class="button" onclick="testLogin('faziya33@gmail.com', 'Faziya')">Test Faziya Login</button>
+            <button class="button" onclick="loginAndOpenProfile('faziya33@gmail.com')">Login & View Profile</button>
+        </div>
+        
+        <div class="user-card">
+            <h3>👨 Samad (Male - Reference)</h3>
+            <p><strong>Email:</strong> samad_shaik@srmap.edu.in</p>
+            <p><strong>Password:</strong> password123</p>
+            <p><strong>Age:</strong> 20 | <strong>Location:</strong> Guntur</p>
+            <button class="button" onclick="testLogin('samad_shaik@srmap.edu.in', 'Samad')">Test Samad Login</button>
+            <button class="button" onclick="loginAndOpenProfile('samad_shaik@srmap.edu.in')">Login & View Profile</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        
+        function showStatus(message, isError = false) {
+            statusDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        async function testLogin(email, name) {
+            try {
+                showStatus(`🔄 Testing ${name}'s login...`);
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    showStatus(`✅ ${name}'s login successful!`);
+                    
+                    resultsDiv.innerHTML += `
+                        <div class="user-card">
+                            <h4>✅ ${name} - Login Success</h4>
+                            <p><strong>User ID:</strong> ${data.user._id}</p>
+                            <p><strong>Name:</strong> ${data.user.name}</p>
+                            <p><strong>Email:</strong> ${data.user.email}</p>
+                            <p><strong>Gender:</strong> ${data.user.gender}</p>
+                            <p><strong>Token:</strong> ${data.token.substring(0, 30)}...</p>
+                        </div>
+                    `;
+                } else {
+                    showStatus(`❌ ${name}'s login failed: ${data.message}`, true);
+                    resultsDiv.innerHTML += `
+                        <div class="user-card" style="border-color: #f44336; background: #ffebee;">
+                            <h4>❌ ${name} - Login Failed</h4>
+                            <p><strong>Error:</strong> ${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                showStatus(`❌ ${name} login error: ${error.message}`, true);
+                console.error(`${name} login error:`, error);
+            }
+        }
+        
+        async function loginAndOpenProfile(email) {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', email);
+                    showStatus(`✅ Logged in as ${data.user.name}. Opening profile...`);
+                    
+                    setTimeout(() => {
+                        window.open('/myprofile.html', '_blank');
+                    }, 1000);
+                } else {
+                    showStatus(`❌ Login failed: ${data.message}`, true);
+                }
+            } catch (error) {
+                showStatus(`❌ Login error: ${error.message}`, true);
+            }
+        }
+        
+        // Test all accounts on page load
+        window.addEventListener('load', () => {
+            showStatus('ℹ️ All accounts are now fixed! Click any button to test.');
+        });
+    </script>
+</body>
+</html>

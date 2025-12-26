@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Riya's Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .user-card {
+            border: 2px solid #e91e63;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e91e63;
+            margin: 10px 0;
+        }
+        .button {
+            background: #e91e63;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            width: 100%;
+        }
+        .button:hover {
+            background: #c2185b;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .credentials {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👩 Riya's Account Test</h1>
+        
+        <div class="user-card">
+            <h2>🆕 New User Created: Riya Sharma</h2>
+            <img id="profilePhoto" src="https://images.unsplash.com/photo-1494790108755-2616b169ad14?w=400&h=400&fit=crop&crop=face" alt="Riya's Profile" class="profile-photo">
+            
+            <div class="credentials">
+                <strong>🔑 Login Credentials:</strong><br>
+                Email: riya.sharma@gmail.com<br>
+                Password: password123
+            </div>
+            
+            <p><strong>👤 Profile Details:</strong></p>
+            <ul>
+                <li><strong>Name:</strong> Riya Sharma</li>
+                <li><strong>Age:</strong> 21 years old</li>
+                <li><strong>Gender:</strong> Female</li>
+                <li><strong>Location:</strong> Mumbai, Maharashtra, India</li>
+                <li><strong>Interests:</strong> Photography, Art, Travel, Reading, Movies, Dancing</li>
+                <li><strong>Looking for:</strong> Male (19-28 years, within 50km)</li>
+            </ul>
+            
+            <p><strong>📝 Bio:</strong> I'm a creative design student who loves art, photography, and exploring new places. I enjoy reading novels, watching movies, and spending time with friends. Looking for someone genuine and fun-loving!</p>
+        </div>
+        
+        <button class="button" onclick="testRiyaLogin()">🔐 Test Riya's Login</button>
+        <button class="button" onclick="openRiyaProfile()">👤 View Riya's Profile</button>
+        
+        <div id="status"></div>
+        <div id="loginResult" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const loginResultDiv = document.getElementById('loginResult');
+        
+        function showStatus(message, isError = false) {
+            statusDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        async function testRiyaLogin() {
+            try {
+                showStatus('🔄 Testing Riya\'s login credentials...');
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'riya.sharma@gmail.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    // Store Riya's token
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', 'riya');
+                    
+                    showStatus('✅ Riya\'s login successful!');
+                    
+                    loginResultDiv.innerHTML = `
+                        <div class="user-card">
+                            <h3>✅ Login Response:</h3>
+                            <p><strong>User ID:</strong> ${data.user._id}</p>
+                            <p><strong>Name:</strong> ${data.user.name}</p>
+                            <p><strong>Email:</strong> ${data.user.email}</p>
+                            <p><strong>Token:</strong> ${data.token.substring(0, 50)}...</p>
+                            <p><strong>Profile Photo:</strong> <img src="${data.user.photos[0]?.url || 'No photo'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; vertical-align: middle;"></p>
+                        </div>
+                    `;
+                } else {
+                    showStatus(`❌ Login failed: ${data.message}`, true);
+                    loginResultDiv.innerHTML = `<div class="error">Login failed: ${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (error) {
+                showStatus(`❌ Login error: ${error.message}`, true);
+                console.error('Login error:', error);
+            }
+        }
+        
+        function openRiyaProfile() {
+            // First login as Riya, then open profile
+            testRiyaLogin().then(() => {
+                setTimeout(() => {
+                    window.open('/myprofile.html', '_blank');
+                }, 1000);
+            });
+        }
+        
+        // Auto-load profile photo
+        window.addEventListener('load', () => {
+            showStatus('ℹ️ Riya\'s account has been created successfully! Use the buttons above to test.');
+        });
+    </script>
+</body>
+</html>

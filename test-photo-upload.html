@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #e91e63;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #c2185b;
+        }
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .photo-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 Photo Upload Test</h1>
+        
+        <div id="status"></div>
+        
+        <input type="file" id="photoInput" accept="image/*" style="margin: 20px 0;">
+        <br>
+        
+        <button class="button" onclick="testLogin()">🔐 Login First</button>
+        <button class="button" onclick="uploadPhoto()" id="uploadBtn" disabled>📤 Upload Photo</button>
+        
+        <div id="photoPreview"></div>
+        
+        <div id="response" style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px; display: none;">
+            <h3>Server Response:</h3>
+            <pre id="responseText"></pre>
+        </div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const responseDiv = document.getElementById('response');
+        const responseText = document.getElementById('responseText');
+        
+        function showStatus(message, isError = false) {
+            statusDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        function showResponse(data) {
+            responseDiv.style.display = 'block';
+            responseText.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        async function testLogin() {
+            try {
+                showStatus('🔄 Logging in...');
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'samad_shaik@srmap.edu.in',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    showStatus('✅ Login successful! You can now upload photos.');
+                    uploadBtn.disabled = false;
+                    showResponse(data);
+                } else {
+                    showStatus(`❌ Login failed: ${data.message}`, true);
+                    showResponse(data);
+                }
+            } catch (error) {
+                showStatus(`❌ Login error: ${error.message}`, true);
+                console.error('Login error:', error);
+            }
+        }
+        
+        async function uploadPhoto() {
+            const fileInput = document.getElementById('photoInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a photo first');
+                return;
+            }
+            
+            // Validate file
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size too large. Please choose an image smaller than 5MB.');
+                return;
+            }
+            
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Invalid file type. Please choose a JPEG, PNG, or GIF image.');
+                return;
+            }
+            
+            try {
+                showStatus('📤 Uploading photo...');
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = '⏳ Uploading...';
+                
+                const formData = new FormData();
+                formData.append('photo', file);
+                
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Please login first');
+                    return;
+                }
+                
+                const response = await fetch('/api/uploads/photo', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                showResponse(result);
+                
+                if (result.success) {
+                    showStatus('✅ Photo uploaded successfully!');
+                    
+                    // Show preview
+                    const preview = document.getElementById('photoPreview');
+                    preview.innerHTML = `
+                        <h3>Uploaded Photo:</h3>
+                        <img src="${result.data.url}" alt="Uploaded photo" class="photo-preview">
+                        <p><strong>URL:</strong> ${result.data.url}</p>
+                    `;
+                } else {
+                    showStatus(`❌ Upload failed: ${result.message}`, true);
+                }
+            } catch (error) {
+                showStatus(`❌ Upload error: ${error.message}`, true);
+                console.error('Upload error:', error);
+                showResponse({ error: error.message });
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '📤 Upload Photo';
+            }
+        }
+        
+        // Auto-login if token exists
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                showStatus('🔍 Found existing token');
+                uploadBtn.disabled = false;
+            } else {
+                showStatus('ℹ️ Please login first to upload photos');
+            }
+        });
+    </script>
+</body>
+</html>

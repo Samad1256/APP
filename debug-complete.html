@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background: #e7f3ff; border-color: #bee5eb; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .token-display { word-break: break-all; font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 3px; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 250px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Authentication Debug Tool</h1>
+        
+        <div class="section">
+            <h3>🧪 Step 1: Test Login API</h3>
+            <input type="email" id="testEmail" value="samad_shaik@srmap.edu.in" placeholder="Email">
+            <input type="password" id="testPassword" value="password123" placeholder="Password">
+            <button onclick="testLogin()">Test Login</button>
+            <div id="loginResult"></div>
+        </div>
+
+        <div class="section">
+            <h3>🔑 Step 2: Test Token Storage</h3>
+            <button onclick="checkToken()">Check LocalStorage Token</button>
+            <button onclick="clearToken()">Clear Token</button>
+            <div id="tokenResult"></div>
+        </div>
+
+        <div class="section">
+            <h3>👤 Step 3: Test Profile API</h3>
+            <button onclick="testProfile()">Test /api/auth/me</button>
+            <div id="profileResult"></div>
+        </div>
+
+        <div class="section">
+            <h3>🌐 Step 4: Navigation Test</h3>
+            <button onclick="window.location.href='/loginpage.html'">Go to Login Page</button>
+            <button onclick="window.location.href='/myprofile.html'">Go to Profile Page</button>
+            <button onclick="window.location.href='/homepage.html'">Go to Homepage</button>
+        </div>
+
+        <div class="section info">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Click "Test Login" to verify the API works</li>
+                <li>Check if token is stored properly</li>
+                <li>Test if profile API accepts the token</li>
+                <li>Navigate to actual pages to test full flow</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('authToken', data.data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.data.user));
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Login successful!<br>
+                            User: ${data.data.user.name}<br>
+                            Email: ${data.data.user.email}<br>
+                            Token stored in localStorage
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Login failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">💥 Error: ${error.message}</div>`;
+            }
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            const resultDiv = document.getElementById('tokenResult');
+            
+            if (token) {
+                const user = JSON.parse(userData || '{}');
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Token found!<br>
+                        User: ${user.name || 'Unknown'}<br>
+                        Email: ${user.email || 'Unknown'}<br>
+                        <div class="token-display">Token: ${token.substring(0, 50)}...</div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="error">❌ No token found in localStorage</div>`;
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            document.getElementById('tokenResult').innerHTML = `<div class="info">🗑️ Token cleared</div>`;
+        }
+
+        async function testProfile() {
+            const token = localStorage.getItem('authToken');
+            const resultDiv = document.getElementById('profileResult');
+            
+            if (!token) {
+                resultDiv.innerHTML = `<div class="error">❌ No token found. Please login first.</div>`;
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const user = data.data.user;
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Profile API works!<br>
+                            Name: ${user.name}<br>
+                            Email: ${user.email}<br>
+                            Status: ${user.isActive ? 'Online' : 'Offline'}<br>
+                            Gender: ${user.gender}<br>
+                            Last Active: ${new Date(user.lastActive).toLocaleString()}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Profile API failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">💥 Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-check token on page load
+        window.onload = () => {
+            checkToken();
+        };
+    </script>
+</body>
+</html>

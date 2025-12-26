@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Test - Final</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .button {
+            background: #e91e63;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #c2185b;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .debug {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Profile Data Test</h1>
+        <p>Testing if profile data loads correctly from the database.</p>
+        
+        <div class="field">
+            <label for="profilePhoto">Profile Photo:</label>
+            <img id="profilePhoto" src="https://via.placeholder.com/100x100/e91e63/white?text=👤" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        </div>
+        
+        <div id="status"></div>
+        
+        <div class="field">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" readonly>
+        </div>
+        
+        <div class="field">
+            <label for="email">Email:</label>
+            <input type="email" id="email" readonly>
+        </div>
+        
+        <div class="field">
+            <label for="age">Age:</label>
+            <input type="number" id="age" readonly>
+        </div>
+        
+        <div class="field">
+            <label for="location">Location:</label>
+            <input type="text" id="location" readonly>
+        </div>
+        
+        <div class="field">
+            <label for="occupation">Interests/Occupation:</label>
+            <input type="text" id="occupation" readonly>
+        </div>
+        
+        <div class="field">
+            <label for="bio">Bio:</label>
+            <textarea id="bio" readonly></textarea>
+        </div>
+        
+        <button class="button" onclick="testLogin()">🔐 Login & Load Profile</button>
+        <button class="button" onclick="loadProfile()">📋 Load Profile Data</button>
+        
+        <div id="debugInfo" class="debug" style="display: none;"></div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const debugDiv = document.getElementById('debugInfo');
+        
+        function showStatus(message, isError = false) {
+            statusDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        function showDebug(data) {
+            debugDiv.style.display = 'block';
+            debugDiv.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        async function testLogin() {
+            try {
+                showStatus('🔄 Logging in...');
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'samad_shaik@srmap.edu.in',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    showStatus('✅ Login successful! Token saved.');
+                    showDebug(data);
+                    
+                    // Auto-load profile after login
+                    setTimeout(loadProfile, 1000);
+                } else {
+                    showStatus(`❌ Login failed: ${data.message}`, true);
+                    showDebug(data);
+                }
+            } catch (error) {
+                showStatus(`❌ Login error: ${error.message}`, true);
+                console.error('Login error:', error);
+            }
+        }
+        
+        async function loadProfile() {
+            try {
+                showStatus('🔄 Loading profile data...');
+                
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    showStatus('❌ No token found. Please login first.', true);
+                    return;
+                }
+                
+                const response = await fetch('/api/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.user) {
+                    const user = data.user;
+                    showStatus('✅ Profile data loaded successfully!');
+                    showDebug(user);
+                    
+                    // Populate form fields
+                    document.getElementById('fullName').value = user.name || '';
+                    document.getElementById('email').value = user.email || '';
+                    
+                    if (user.dateOfBirth) {
+                        const age = new Date().getFullYear() - new Date(user.dateOfBirth).getFullYear();
+                        document.getElementById('age').value = age;
+                    }
+                    
+                    document.getElementById('location').value = user.location?.city || '';
+                    
+                    const interests = user.interests && user.interests.length > 0 
+                        ? user.interests.join(', ') 
+                        : 'Not specified';
+                    document.getElementById('occupation').value = interests;
+                    
+                    document.getElementById('bio').value = user.bio || '';
+                    
+                    // Update profile photo
+                    const profilePhotoEl = document.getElementById('profilePhoto');
+                    if (user.photos && user.photos.length > 0 && user.photos[0].url) {
+                        profilePhotoEl.src = user.photos[0].url;
+                    } else {
+                        const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '👤';
+                        profilePhotoEl.src = `https://via.placeholder.com/100x100/e91e63/white?text=${initials}`;
+                    }
+                    
+                } else {
+                    showStatus(`❌ Failed to load profile: ${data.message}`, true);
+                    showDebug(data);
+                }
+            } catch (error) {
+                showStatus(`❌ Profile loading error: ${error.message}`, true);
+                console.error('Profile error:', error);
+            }
+        }
+        
+        // Auto-load profile if token exists
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                showStatus('🔍 Found existing token, loading profile...');
+                loadProfile();
+            } else {
+                showStatus('ℹ️ No token found. Please login first.');
+            }
+        });
+    </script>
+</body>
+</html>

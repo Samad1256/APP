@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Authentication</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Authentication Debug Tool</h1>
+    
+    <div class="section">
+        <h3>Step 1: Test Server Connection</h3>
+        <button onclick="testServer()">Test Server</button>
+        <pre id="serverResult">Not tested</pre>
+    </div>
+
+    <div class="section">
+        <h3>Step 2: Check Existing Users</h3>
+        <button onclick="listUsers()">List All Users</button>
+        <pre id="usersResult">Not tested</pre>
+    </div>
+
+    <div class="section">
+        <h3>Step 3: Test FAKE Login (Should Fail)</h3>
+        <button onclick="testFakeLogin()">Test Fake Credentials</button>
+        <pre id="fakeLoginResult">Not tested</pre>
+    </div>
+
+    <div class="section">
+        <h3>Step 4: Register Test User</h3>
+        <button onclick="registerTestUser()">Register Test User</button>
+        <pre id="registerResult">Not tested</pre>
+    </div>
+
+    <div class="section">
+        <h3>Step 5: Test REAL Login (Should Work)</h3>
+        <button onclick="testRealLogin()">Test Real Credentials</button>
+        <pre id="realLoginResult">Not tested</pre>
+    </div>
+
+    <script>
+        async function testServer() {
+            const result = document.getElementById('serverResult');
+            try {
+                const response = await fetch('/');
+                result.textContent = `✅ Server is running\nStatus: ${response.status}\nHeaders: ${JSON.stringify([...response.headers], null, 2)}`;
+            } catch (error) {
+                result.textContent = `❌ Server connection failed: ${error.message}`;
+            }
+        }
+
+        async function listUsers() {
+            const result = document.getElementById('usersResult');
+            try {
+                const response = await fetch('/api/users');
+                const text = await response.text();
+                
+                try {
+                    const data = JSON.parse(text);
+                    result.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                } catch {
+                    result.textContent = `Status: ${response.status}\nRaw Response: ${text}`;
+                }
+            } catch (error) {
+                result.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function testFakeLogin() {
+            const result = document.getElementById('fakeLoginResult');
+            const testCredentials = {
+                email: "fake@nonexistent.com",
+                password: "wrongpassword"
+            };
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testCredentials)
+                });
+                
+                const text = await response.text();
+                
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        result.textContent = `❌ BUG CONFIRMED! Fake login succeeded when it should fail!\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                    } else {
+                        result.textContent = `✅ GOOD! Fake login failed as expected\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                    }
+                } catch {
+                    result.textContent = `Status: ${response.status}\nRaw Response: ${text}`;
+                }
+            } catch (error) {
+                result.textContent = `❌ Network Error: ${error.message}`;
+            }
+        }
+
+        async function registerTestUser() {
+            const result = document.getElementById('registerResult');
+            const testUser = {
+                name: "Test User",
+                email: "test@example.com",
+                password: "testpass123"
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testUser)
+                });
+                
+                const text = await response.text();
+                
+                try {
+                    const data = JSON.parse(text);
+                    result.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                } catch {
+                    result.textContent = `Status: ${response.status}\nRaw Response: ${text}`;
+                }
+            } catch (error) {
+                result.textContent = `❌ Network Error: ${error.message}`;
+            }
+        }
+
+        async function testRealLogin() {
+            const result = document.getElementById('realLoginResult');
+            const realCredentials = {
+                email: "test@example.com",
+                password: "testpass123"
+            };
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(realCredentials)
+                });
+                
+                const text = await response.text();
+                
+                try {
+                    const data = JSON.parse(text);
+                    result.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                } catch {
+                    result.textContent = `Status: ${response.status}\nRaw Response: ${text}`;
+                }
+            } catch (error) {
+                result.textContent = `❌ Network Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
